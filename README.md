@@ -94,6 +94,21 @@ If no config file is found, `x11idle` runs with an empty configuration.
 
 All available options are fully documented in [`assets/config.toml`](assets/config.toml).
 
+## Autostart
+
+Add this to your autostart script or window manager configuration (e.g. `~/.xinitrc`, `~/.xprofile`, bspwmrc, i3 config, etc.):
+
+```bash
+# Disable X11 built-in screensaver and DPMS auto timeouts
+# x11idle handles idle timeouts — let it be the only one in charge
+xset s 0 0 noblank noexpose
+xset dpms 0 0 0
+
+# Start idle daemon (stop previous instance gracefully if running)
+killall -q -TERM x11idle
+x11idle &
+```
+
 ## Requirements
 
 - Linux with X11

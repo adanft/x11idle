@@ -94,6 +94,8 @@ If no config file is found, `x11idle` runs with an empty configuration.
 
 All available options are fully documented in [`assets/config.toml`](assets/config.toml).
 
+For a real world example, see [`assets/example.toml`](assets/example.toml).
+
 ## Autostart
 
 Add this to your autostart script or window manager configuration (e.g. `~/.xinitrc`, `~/.xprofile`, bspwmrc, i3 config, etc.):

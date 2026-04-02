@@ -1,0 +1,33 @@
+# Real world example
+#
+# Flow: dim screen → lock → display off → suspend
+
+[general]
+lock_cmd = "pidof x11lock || x11lock"
+unlock_cmd = ""
+before_sleep_cmd = "loginctl lock-session"
+after_sleep_cmd = "xset dpms force on"
+
+# 5 min — dim screen
+[[listener]]
+timeout = 300
+on-timeout = "brightnessctl -s set 1%"
+on-resume = "brightnessctl -r"
+
+# 10 min — lock session
+[[listener]]
+timeout = 600
+on-timeout = "loginctl lock-session"
+on-resume = ""
+
+# 10.5 min — turn off display
+[[listener]]
+timeout = 630
+on-timeout = "xset dpms force off"
+on-resume = "xset dpms force on"
+
+# 15 min — suspend
+[[listener]]
+timeout = 900
+on-timeout = "systemctl suspend"
+on-resume = ""

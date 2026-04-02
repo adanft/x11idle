@@ -1,0 +1,28 @@
+[package]
+name = "x11idle"
+version = "0.1.0"
+edition = "2024"
+description = "X11 idle daemon with D-Bus integration"
+license = "MIT"
+authors = ["adanft"]
+repository = "https://github.com/adanft/x11idle"
+readme = "README.md"
+keywords = ["x11", "idle", "daemon", "dbus", "screensaver"]
+categories = ["os::linux-apis"]
+
+[dependencies]
+clap = { version = "4", features = ["derive", "env"] }
+libc = "0.2"
+tokio = { version = "1.50.0", features = ["macros", "rt-multi-thread", "signal", "time"] }
+zbus = { version = "5.14.0", features = ["tokio"] }
+futures-util = "0.3"
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+x11-dl = "2.21"
+
+[profile.release]
+opt-level = "z"
+lto = "thin"
+codegen-units = 1
+strip = true
+panic = "abort"

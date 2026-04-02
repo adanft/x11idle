@@ -1,0 +1,62 @@
+# =============================================================================
+# x11idle Configuration File
+# =============================================================================
+#
+# This file contains the complete configuration for x11idle.
+# Copy this file to one of these locations:
+#   - $XDG_CONFIG_HOME/x11idle/config.toml
+#   - ~/.config/x11idle/config.toml
+#
+# All fields are documented inline. See src/config.rs for the complete reference.
+
+[general]
+# --------------------------------------------------------------------------
+# System Events
+# --------------------------------------------------------------------------
+
+# Command to execute when the session is locked
+# Triggered by: systemd-logind Lock signal
+# Default: none
+# Example: "hyprlock", "loginctl lock-session", "swaylock"
+# lock_cmd = "hyprlock"
+
+# Command to execute when the session is unlocked
+# Triggered by: systemd-logind Unlock signal
+# Default: none
+# Example: "notify-send 'Welcome back!'"
+# unlock_cmd = ""
+
+# Command to execute BEFORE the system goes to sleep
+# Triggered by: logind PrepareForSleep(true)
+# Default: none
+# Example: "systemctl suspend"
+# before_sleep_cmd = "systemctl suspend"
+
+# Command to execute AFTER the system wakes from sleep
+# Triggered by: logind PrepareForSleep(false)
+# Default: none
+# Example: "notify-send 'Good morning!'"
+# after_sleep_cmd = "notify-send 'System awake'"
+
+# --------------------------------------------------------------------------
+# Idle Listeners
+# --------------------------------------------------------------------------
+#
+# Each [[listener]] block defines an idle timeout. When the user is idle
+# for `timeout` seconds, the `on-timeout` command runs. When the user
+# provides physical input after a timeout, the `on-resume` command runs.
+#
+# The timer accounts for screensaver inhibition - when an application
+# (like a video player) inhibits the screensaver, the idle timer pauses.
+
+# Lock screen after 5 minutes of inactivity
+[[listener]]
+timeout = 300
+on-timeout = "loginctl lock-session"
+on-resume = "notify-send 'Welcome back'"
+
+# Show reminder after 30 minutes
+[[listener]]
+timeout = 1800
+on-timeout = "notify-send 'You have been idle for 30 minutes'"
+on-resume = ""

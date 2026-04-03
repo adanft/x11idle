@@ -4,10 +4,8 @@
 //! Uses a clear section structure to organize responsibilities.
 
 use std::collections::HashSet;
-use std::sync::Arc;
 
 use tokio::sync::mpsc;
-use tokio::sync::Mutex;
 use tokio::signal;
 use tokio::task::JoinSet;
 use tokio::time::{self, Duration, Instant};
@@ -40,7 +38,7 @@ pub struct App {
     // Configuration
     config: Config,
     // System integration
-    inhibit: Option<Arc<Mutex<SleepInhibit>>>,
+    inhibit: Option<SleepInhibit>,
     // X11 integration
     idle_clock: Option<IdleClock>,
     physical_input_monitor: Option<PhysicalInputMonitor>,
@@ -143,7 +141,7 @@ impl App {
                         }
                         None => {
                             output::error("Event channel closed, stopping x11idle...");
-                            self.release_inhibit().await;
+                            self.release_inhibit();
                             break;
                         }
                     }
@@ -151,22 +149,22 @@ impl App {
                 // Graceful shutdown on Ctrl+C
                 _ = signal::ctrl_c() => {
                     output::info("Shutting down gracefully...");
-                    self.release_inhibit().await;
+                    self.release_inhibit();
                     break;
                 }
                 // Monitor listener tasks for crashes
                 listener = listeners.join_next(), if !listeners.is_empty() => {
                     match listener {
                         Some(Ok(Ok(()))) => {
-                            self.release_inhibit().await;
+                            self.release_inhibit();
                             return Err(Error::Channel("A listener stopped unexpectedly".into()));
                         }
                         Some(Ok(Err(err))) => {
-                            self.release_inhibit().await;
+                            self.release_inhibit();
                             return Err(err);
                         }
                         Some(Err(err)) => {
-                            self.release_inhibit().await;
+                            self.release_inhibit();
                             return Err(Error::Channel(format!("A listener task panicked: {}", err)));
                         }
                         None => {}
@@ -193,7 +191,7 @@ impl App {
             Event::Sleep { going_to_sleep: true } => {
                 output::debug(format!("Event received: {}", event.name()));
                 event.execute(&self.config.general);
-                self.release_inhibit().await;
+                self.release_inhibit();
             }
             Event::Sleep { going_to_sleep: false } => {
                 output::debug(format!("Event received: {}", event.name()));
@@ -313,13 +311,12 @@ impl App {
 
     async fn inhibit_sleep(&mut self, conn: &Connection) -> Result<(), Error> {
         let inhibit = SleepInhibit::new(conn).await?;
-        self.inhibit = Some(Arc::new(Mutex::new(inhibit)));
+        self.inhibit = Some(inhibit);
         Ok(())
     }
 
-    async fn release_inhibit(&self) {
-        if let Some(inhibit) = &self.inhibit {
-            let mut inhibit = inhibit.lock().await;
+    fn release_inhibit(&mut self) {
+        if let Some(inhibit) = &mut self.inhibit {
             inhibit.release();
         }
     }

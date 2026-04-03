@@ -1,6 +1,6 @@
 //! # System Events
 
-use std::process::Command;
+use tokio::process::Command;
 
 use crate::config::GeneralConfig;
 use crate::error::Error;

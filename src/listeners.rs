@@ -1,6 +1,6 @@
 //! # D-Bus Listeners
 
-use futures_util::stream::StreamExt;
+use futures_lite::stream::StreamExt;
 use tokio::sync::mpsc;
 use zbus::message::Type;
 use zbus::{Connection, MatchRule, MessageStream, Result};

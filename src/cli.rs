@@ -1,31 +1,34 @@
 //! # Command Line Interface
 
-use clap::Parser;
-
-/// Command line arguments for x11idle
-#[derive(Parser, Debug)]
-#[command(
-    name = "x11idle",
-    version = env!("CARGO_PKG_VERSION"),
-    about = "X11 idle daemon with D-Bus integration",
-    disable_help_flag = true
-)]
 pub struct Args {
-    /// Enable debug logging to stderr
-    #[arg(
-        short,
-        long,
-        env = "X11IDLE_DEBUG",
-        help = "Enable verbose debug output"
-    )]
     pub debug: bool,
-
-    /// Show help information
-    #[arg(short, long, action = clap::ArgAction::Help, help = "Show this help message")]
-    help: Option<bool>,
 }
 
-/// Get parsed CLI arguments
 pub fn parse() -> Args {
-    Args::parse()
+    let mut debug = std::env::var("X11IDLE_DEBUG").is_ok();
+
+    for arg in std::env::args().skip(1) {
+        match arg.as_str() {
+            "-d" | "--debug" => debug = true,
+            "-v" | "--version" => {
+                println!("x11idle {}", env!("CARGO_PKG_VERSION"));
+                std::process::exit(0);
+            }
+            "-h" | "--help" => {
+                println!("x11idle — X11 idle daemon with D-Bus integration\n");
+                println!("Usage: x11idle [OPTIONS]\n");
+                println!("Options:");
+                println!("  -d, --debug    Enable verbose debug output (or set X11IDLE_DEBUG)");
+                println!("  -h, --help     Show this help message");
+                println!("  -v, --version  Show version");
+                std::process::exit(0);
+            }
+            other => {
+                eprintln!("Unknown option: {}", other);
+                std::process::exit(1);
+            }
+        }
+    }
+
+    Args { debug }
 }

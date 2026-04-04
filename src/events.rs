@@ -3,7 +3,6 @@
 use tokio::process::Command;
 
 use crate::config::GeneralConfig;
-use crate::error::Error;
 use crate::output;
 
 #[derive(Debug, Clone)]
@@ -98,11 +97,10 @@ pub fn run_command(name: &str, cmd_str: &str) {
     output::debug(format!("Executing {} command: {}", name, cmd_str));
 
     if let Err(err) = Command::new("sh").arg("-c").arg(cmd_str).spawn() {
-        let err = Error::Command(format!(
+        output::error(format!(
             "failed to spawn {} command '{}': {}",
             name, cmd_str, err
         ));
-        output::error(err);
     }
 }
 

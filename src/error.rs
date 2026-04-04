@@ -4,7 +4,6 @@
 pub enum Error {
     Dbus(String),
     Config(String),
-    Command(String),
     Inhibit(String),
     X11(String),
     Channel(String),
@@ -15,7 +14,6 @@ impl std::fmt::Display for Error {
         match self {
             Error::Dbus(msg) => write!(f, "D-Bus error: {}", msg),
             Error::Config(msg) => write!(f, "Configuration error: {}", msg),
-            Error::Command(msg) => write!(f, "Command error: {}", msg),
             Error::Inhibit(msg) => write!(f, "Inhibit error: {}", msg),
             Error::X11(msg) => write!(f, "X11 error: {}", msg),
             Error::Channel(msg) => write!(f, "Channel error: {}", msg),

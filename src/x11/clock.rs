@@ -3,6 +3,8 @@ use x11_dl::xss;
 
 use crate::error::Error;
 
+/// X11 idle time reader. Contains raw X11 pointers, making it `!Send`.
+/// App must run on the main thread via `block_on` — do NOT use `tokio::spawn`.
 pub struct IdleClock {
     xlib: xlib::Xlib,
     xss: xss::Xss,

@@ -62,7 +62,7 @@ impl ScreenSaverService {
     fn allocate_cookie(&self, application: &str, reason: &str) -> u32 {
         let mut state = self.state.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
         let cookie = state.next_cookie;
-        state.next_cookie = state.next_cookie.saturating_add(1);
+        state.next_cookie = state.next_cookie.wrapping_add(1);
         state.active_cookies.insert(
             cookie,
             CookieDetails {

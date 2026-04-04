@@ -137,7 +137,7 @@ impl App {
                     match maybe_event {
                         Some(event) => {
                             self.handle_event(conn, event).await?;
-                            idle_sleep.as_mut().reset(Instant::now() + self.immediate_idle_delay());
+                            idle_sleep.as_mut().reset(Instant::now() + Duration::from_millis(IMMEDIATE_WAKE_DELAY_MS));
                         }
                         None => {
                             output::error("Event channel closed, stopping x11idle...");
@@ -235,7 +235,7 @@ impl App {
 
     fn poll_x11(&mut self) -> Result<Duration, Error> {
         let Some(idle_clock) = &self.idle_clock else {
-            return Ok(self.idle_maintenance_delay());
+            return Ok(Duration::from_secs(MAINTENANCE_DELAY_SECS));
         };
 
         match idle_clock.idle_ms() {
@@ -243,33 +243,21 @@ impl App {
                 let inhibit_active = !self.screensaver_inhibitors.is_empty();
                 self.idle_scheduler.update(idle_ms, inhibit_active);
                 self.sync_physical_input_monitor()?;
-                Ok(self.compute_next_idle_delay(idle_ms, inhibit_active))
+                Ok(self.idle_scheduler.next_wake_delay(idle_ms, inhibit_active))
             }
             Err(err) => {
                 output::error(err.to_string());
-                Ok(self.idle_maintenance_delay())
+                Ok(Duration::from_secs(MAINTENANCE_DELAY_SECS))
             }
         }
     }
 
     fn initial_idle_delay(&self) -> Duration {
         if self.idle_clock.is_some() {
-            self.immediate_idle_delay()
+            Duration::from_millis(IMMEDIATE_WAKE_DELAY_MS)
         } else {
             Duration::from_secs(NO_IDLE_CLOCK_DELAY_SECS)
         }
-    }
-
-    fn compute_next_idle_delay(&self, idle_ms: u64, inhibit_active: bool) -> Duration {
-        self.idle_scheduler.next_wake_delay(idle_ms, inhibit_active)
-    }
-
-    fn idle_maintenance_delay(&self) -> Duration {
-        Duration::from_secs(MAINTENANCE_DELAY_SECS)
-    }
-
-    fn immediate_idle_delay(&self) -> Duration {
-        Duration::from_millis(IMMEDIATE_WAKE_DELAY_MS)
     }
 
     fn handle_physical_activity(&mut self) {

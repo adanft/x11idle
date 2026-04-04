@@ -103,11 +103,3 @@ pub fn run_command(name: &str, cmd_str: &str) {
         ));
     }
 }
-
-pub fn run_optional_command(name: &str, cmd_str: &str) {
-    if cmd_str.trim().is_empty() {
-        return;
-    }
-
-    run_command(name, cmd_str);
-}

@@ -57,7 +57,9 @@ impl IdleScheduler {
                     continue;
                 }
 
-                events::run_optional_command("listener timeout", &listener.config.on_timeout);
+                if let Some(cmd) = &listener.config.on_timeout {
+                    events::run_command("listener timeout", cmd);
+                }
                 listener.fired = true;
             }
         }
@@ -106,7 +108,9 @@ impl IdleScheduler {
                 continue;
             }
 
-            events::run_optional_command("listener resume", &listener.config.on_resume);
+            if let Some(cmd) = &listener.config.on_resume {
+                events::run_command("listener resume", cmd);
+            }
             listener.fired = false;
         }
     }

@@ -100,8 +100,8 @@ pub struct ListenerConfig {
     /// `timeout` seconds without any physical input.
     ///
     /// Example: "notify-send 'Idle timeout reached'", "loginctl lock-session"
-    #[serde(rename = "on-timeout")]
-    pub on_timeout: String,
+    #[serde(default, rename = "on-timeout")]
+    pub on_timeout: Option<String>,
 
     /// Command to execute when the user returns after a timeout
     ///
@@ -109,8 +109,8 @@ pub struct ListenerConfig {
     /// after the timeout was triggered. It runs once per idle cycle.
     ///
     /// Example: "notify-send 'Welcome back'"
-    #[serde(rename = "on-resume")]
-    pub on_resume: String,
+    #[serde(default, rename = "on-resume")]
+    pub on_resume: Option<String>,
 }
 
 impl Config {

@@ -1,7 +1,7 @@
 [package]
 name = "x11idle"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 description = "X11 idle daemon with D-Bus integration"
 license = "MIT"
 authors = ["adanft"]

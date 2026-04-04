@@ -56,6 +56,9 @@ impl ScreenSaverService {
         Self { tx, path, state }
     }
 
+    // std::sync::Mutex is intentional — critical section is pure data manipulation
+    // (HashMap insert/remove) with no .await inside. Do NOT hold this lock across .await points.
+
     fn allocate_cookie(&self, application: &str, reason: &str) -> u32 {
         let mut state = self.state.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
         let cookie = state.next_cookie;
@@ -81,7 +84,7 @@ impl ScreenSaverService {
     async fn inhibit(&mut self, application_name: &str, reason_for_inhibit: &str) -> u32 {
         let cookie = self.allocate_cookie(application_name, reason_for_inhibit);
 
-        let _ = self
+        if self
             .tx
             .send(Event::ScreenSaverInhibit {
                 path: self.path,
@@ -89,7 +92,11 @@ impl ScreenSaverService {
                 reason: reason_for_inhibit.to_string(),
                 cookie,
             })
-            .await;
+            .await
+            .is_err()
+        {
+            output::debug("Event channel closed, screensaver inhibit event dropped");
+        }
 
         cookie
     }
@@ -97,13 +104,17 @@ impl ScreenSaverService {
     async fn un_inhibit(&mut self, cookie: u32) {
         let details = self.remove_cookie(cookie);
 
-        let _ = self
+        if self
             .tx
             .send(Event::ScreenSaverUnInhibit {
                 path: self.path,
                 cookie,
                 details: details.map(|details| (details.application, details.reason)),
             })
-            .await;
+            .await
+            .is_err()
+        {
+            output::debug("Event channel closed, screensaver uninhibit event dropped");
+        }
     }
 }

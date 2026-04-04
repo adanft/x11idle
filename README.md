@@ -71,9 +71,9 @@ X11 idle daemon with D-Bus integration
 Usage: x11idle [OPTIONS]
 
 Options:
-  -d, --debug    Enable verbose debug output [env: X11IDLE_DEBUG=]
+  -d, --debug    Enable verbose debug output (or set X11IDLE_DEBUG)
   -h, --help     Show this help message
-  -V, --version  Print version
+  -v, --version  Show version
 ```
 
 ## Configuration
@@ -91,6 +91,9 @@ Config is loaded from:
 2. `~/.config/x11idle/config.toml`
 
 If no config file is found, `x11idle` runs with an empty configuration.
+
+All general commands are optional and may be omitted entirely.
+Within each `[[listener]]`, both `on-timeout` and `on-resume` are also optional.
 
 All available options are fully documented in [`assets/config.toml`](assets/config.toml).
 

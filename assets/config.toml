@@ -23,8 +23,9 @@
 # Command to execute when the session is unlocked
 # Triggered by: systemd-logind Unlock signal
 # Default: none
+# This field is optional and may be omitted entirely.
 # Example: "notify-send 'Welcome back!'"
-# unlock_cmd = ""
+# unlock_cmd = "notify-send 'Welcome back!'"
 
 # Command to execute BEFORE the system goes to sleep
 # Triggered by: logind PrepareForSleep(true)
@@ -43,8 +44,9 @@
 # --------------------------------------------------------------------------
 #
 # Each [[listener]] block defines an idle timeout. When the user is idle
-# for `timeout` seconds, the `on-timeout` command runs. When the user
-# provides physical input after a timeout, the `on-resume` command runs.
+# for `timeout` seconds, the optional `on-timeout` command runs. When the user
+# provides physical input after a timeout, the optional `on-resume` command runs.
+# Both fields may be omitted entirely.
 #
 # The timer accounts for screensaver inhibition - when an application
 # (like a video player) inhibits the screensaver, the idle timer pauses.
@@ -59,4 +61,4 @@ on-resume = "notify-send 'Welcome back'"
 [[listener]]
 timeout = 1800
 on-timeout = "notify-send 'You have been idle for 30 minutes'"
-on-resume = ""
+# on-resume omitted on purpose

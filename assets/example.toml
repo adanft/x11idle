@@ -4,7 +4,6 @@
 
 [general]
 lock_cmd = "pidof x11lock || x11lock"
-unlock_cmd = ""
 before_sleep_cmd = "loginctl lock-session"
 after_sleep_cmd = "xset dpms force on"
 
@@ -18,7 +17,7 @@ on-resume = "brightnessctl -r"
 [[listener]]
 timeout = 600
 on-timeout = "loginctl lock-session"
-on-resume = ""
+# on-resume omitted on purpose
 
 # 10.5 min — turn off display
 [[listener]]
@@ -30,4 +29,4 @@ on-resume = "xset dpms force on"
 [[listener]]
 timeout = 900
 on-timeout = "systemctl suspend"
-on-resume = ""
+# on-resume omitted on purpose

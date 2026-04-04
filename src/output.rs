@@ -8,12 +8,12 @@ static DEBUG_MODE: AtomicBool = AtomicBool::new(false);
 
 /// Initialize debug mode from CLI
 pub fn set_debug_mode(enabled: bool) {
-    DEBUG_MODE.store(enabled, Ordering::SeqCst);
+    DEBUG_MODE.store(enabled, Ordering::Relaxed);
 }
 
 /// Check if debug mode is enabled
 pub fn is_debug_enabled() -> bool {
-    DEBUG_MODE.load(Ordering::SeqCst)
+    DEBUG_MODE.load(Ordering::Relaxed)
 }
 
 /// Print info message to stdout
